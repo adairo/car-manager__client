@@ -1,4 +1,4 @@
-export function setSession(token) {
+export function saveSession(token) {
   sessionStorage.setItem('session', token)
 }
 

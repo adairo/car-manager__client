@@ -1,7 +1,9 @@
+//
 <script setup>
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { z } from 'zod'
+import { saveSession } from '../lib/session.js'
 
 const router = useRouter()
 
@@ -39,7 +41,7 @@ function submit() {
         throw new Error(data.error)
       }
 
-      sessionStorage.setItem('session', data.token)
+      saveSession()
       router.push('/')
     })
     .catch((error) => alert(error.message))
@@ -71,7 +73,7 @@ function submit() {
       </div>
 
       <div class="form__field">
-        <button type="submit" class="button">Register</button>
+        <button type="submit" class="button">Access</button>
       </div>
     </form>
   </main>
