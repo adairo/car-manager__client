@@ -1,1 +1,30 @@
 @import './base.css';
+
+.form {
+  border-radius: 0.5rem;
+  box-shadow: 1px 1px 4px lightslategrey;
+  padding: 1rem;
+}
+
+.form--full-screen {
+  max-width: 20rem;
+  margin-inline: auto;
+}
+
+.form__title {
+  font-weight: 800;
+  font-size: large;
+}
+
+.button {
+  padding-block: 0.6rem;
+}
+
+.form > * + * {
+  margin-top: 1.2rem;
+}
+
+.form__field {
+  display: flex;
+  flex-direction: column;
+}

@@ -44,7 +44,7 @@ function submit() {
 
 <template>
   <main>
-    <form class="form" @submit.prevent="submit">
+    <form class="form form--full-screen" @submit.prevent="submit">
       <div>
         <h1 class="form__title">Signup</h1>
         <p>Signup with email and password</p>
@@ -76,32 +76,5 @@ function submit() {
 <style scoped>
 main {
   padding: 2rem;
-}
-
-.form {
-  /* border: 1px solid gray; */
-  border-radius: 0.5rem;
-  box-shadow: 1px 1px 4px lightslategrey;
-  max-width: 20rem;
-  padding: 1rem;
-  margin-inline: auto;
-}
-
-.form__title {
-  font-weight: 800;
-  font-size: large;
-}
-
-.button {
-  padding-block: 0.6rem;
-}
-
-.form > * + * {
-  margin-top: 1.2rem;
-}
-
-.form__field {
-  display: flex;
-  flex-direction: column;
 }
 </style>
