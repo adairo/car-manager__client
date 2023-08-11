@@ -41,7 +41,7 @@ function submit() {
         throw new Error(data.error)
       }
 
-      saveSession()
+      saveSession(data.token)
       router.push('/')
     })
     .catch((error) => alert(error.message))

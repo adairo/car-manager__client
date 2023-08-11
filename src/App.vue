@@ -1,11 +1,17 @@
 <script setup>
-import { ref } from "vue"
+import { useRouter } from 'vue-router'
+import { clearSession, getSession } from './lib/session'
+import { computed, ref } from 'vue'
 
-const links = ref([
-  { path: "login", name: "Login" },
-  { path: "signup", name: "Signup" },
-])
+const session = ref(getSession())
+const isAuth = computed(() => !!session.value)
+const router = useRouter()
 
+function logout() {
+  clearSession()
+  session.value = null
+  router.push('/login')
+}
 </script>
 
 <template>
@@ -13,9 +19,9 @@ const links = ref([
     <h1>Spore</h1>
     <nav>
       <ul class="header__list">
-        <li v-for="link in links" :key="link.path">
-          <router-link :to="link.path">{{ link.name }}</router-link>
-        </li>
+        <router-link v-if="!isAuth" to="/login">Login</router-link>
+        <button v-else @click="logout">Logout</button>
+        <router-link to="/signup">Signup</router-link>
       </ul>
     </nav>
   </header>
