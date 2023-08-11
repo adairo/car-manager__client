@@ -6,10 +6,38 @@ import { getSession } from '../lib/session'
 import icon from '../components/CarIcon/icon.png'
 
 const cars = ref([])
+const carMarkers = ref([])
 const map = ref(null)
 const carIcon = L.icon({
   iconUrl: icon,
   iconSize: [50, 50]
+})
+
+const searchBar = L.Control.extend({
+  onAdd() {
+    const container = document.createElement('div')
+    const input = document.createElement('input')
+    input.type = 'search'
+
+    const searchButton = document.createElement('button')
+    searchButton.textContent = 'Search'
+
+    searchButton.addEventListener('click', () => {
+      const matchedCar = carMarkers.value.find(
+        (car) => car.data.plate.toUpperCase() === input.value.toUpperCase()
+      )
+
+      if (matchedCar) {
+        matchedCar.marker.openPopup()
+        console.log(matchedCar)
+      }
+    })
+
+    container.appendChild(input)
+    container.appendChild(searchButton)
+    return container
+  },
+  onRemove() {}
 })
 
 // Fetch cars
@@ -26,17 +54,24 @@ onMounted(() => {
     }
   })
     .then((res) => res.json())
-    .then((fetchedCars) => (cars.value = fetchedCars))
+    .then((fetchedCars) => {
+      cars.value = fetchedCars
+    })
     .catch(console.error.bind(console))
 })
 
-watch(cars, (newCars) =>
-  newCars.forEach((car) => {
-    const carOnMap = L.marker([car.position.x, car.position.y], { icon: carIcon })
-    carOnMap.bindPopup(`<b class="popup">${car.plate}<b>`)
-    carOnMap.addTo(map.value)
+// Save an array of objects wich holds reference to the original car data
+// and marker object (L.marker)
+watch(cars, (newCars) => {
+  carMarkers.value = newCars.map((car) => ({
+    marker: L.marker([car.position.x, car.position.y], { icon: carIcon }),
+    data: car
+  }))
+  carMarkers.value.forEach((car) => {
+    car.marker.bindPopup(car.data.plate).openPopup()
+    car.marker.addTo(map.value)
   })
-)
+})
 
 // Draw map
 onMounted(() => {
@@ -45,6 +80,8 @@ onMounted(() => {
     maxZoom: 19,
     attribution: '© OpenStreetMap'
   }).addTo(map.value)
+
+  new searchBar().addTo(map.value)
 })
 
 const router = useRouter()
