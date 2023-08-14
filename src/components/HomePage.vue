@@ -106,14 +106,16 @@ function openCarPopup() {
 </script>
 
 <template>
-  <h1>Home</h1>
-  <div ref="mapNode" id="map"></div>
-  <ul>
+  <div class="container">
+    <h1>My cars</h1>
+    <div ref="mapNode" id="map"></div>
+  </div>
+  <!-- <ul>
     <li v-for="car in cars" :key="car.id">
       {{ car }}
     </li>
   </ul>
-  <button @click="openCarPopup">open</button>
+  <button @click="openCarPopup">open</button> -->
 </template>
 
 <style scoped>
@@ -121,8 +123,10 @@ function openCarPopup() {
   width: 100%;
   position: 'relative';
   aspect-ratio: 4 / 3;
-  max-width: 40rem;
-  margin-inline: auto;
+}
+
+.container {
+  padding: 1.5rem;
 }
 
 .popup {

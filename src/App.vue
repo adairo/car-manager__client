@@ -16,7 +16,7 @@ function logout() {
 
 <template>
   <header class="header">
-    <h1>Spore</h1>
+    <h1 class="text-logo">Spore</h1>
     <nav>
       <ul class="header__list">
         <router-link v-if="!isAuth" to="/login">Login</router-link>
@@ -30,10 +30,14 @@ function logout() {
 </template>
 
 <style scoped>
+.text-logo {
+  font-size: 1.3rem;
+  font-weight: 600;
+}
 .header {
-  background-color: rgb(232, 232, 232);
+  background-color: rgb(246, 246, 246);
   padding-inline: 0.8rem;
-  padding-block: 0.3rem;
+  padding-block: 0.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
