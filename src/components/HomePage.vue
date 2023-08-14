@@ -4,10 +4,11 @@ import { useRouter } from 'vue-router'
 import { onMounted, ref, watch } from 'vue'
 import { getSession } from '../lib/session'
 import icon from '../components/CarIcon/icon.png'
+import { socket } from '../socket'
 
 const cars = ref([])
-const carMarkers = ref([])
 const map = ref(null)
+const carMarkers = ref([])
 const carIcon = L.icon({
   iconUrl: icon,
   iconSize: [50, 50]
@@ -23,14 +24,7 @@ const searchBar = L.Control.extend({
     searchButton.textContent = 'Search'
 
     searchButton.addEventListener('click', () => {
-      const matchedCar = carMarkers.value.find(
-        (car) => car.data.plate.toUpperCase() === input.value.toUpperCase()
-      )
-
-      if (matchedCar) {
-        matchedCar.marker.openPopup()
-        console.log(matchedCar)
-      }
+      openCarPopup()
     })
 
     container.appendChild(input)
@@ -40,11 +34,12 @@ const searchBar = L.Control.extend({
   onRemove() {}
 })
 
-// Fetch cars
-onMounted(() => {
+function fetchCars() {
   const session = getSession()
   const authToken = 'Bearer ' + session
   const url = new URL('http://localhost:3000/cars')
+
+  // get cars positions through normal http request
   fetch(url, {
     method: 'GET',
     headers: {
@@ -58,6 +53,17 @@ onMounted(() => {
       cars.value = fetchedCars
     })
     .catch(console.error.bind(console))
+}
+
+// Fetch cars
+onMounted(() => {
+  fetchCars()
+  socket.on('cars:position-updated', (payload) => {
+    const carToUpdateIndex = carMarkers.value.findIndex((car) => car.data.id === payload.carId)
+    carMarkers.value[carToUpdateIndex].marker.setLatLng(
+      L.latLng(payload.position.lattitude, payload.position.longitude)
+    )
+  })
 })
 
 // Save an array of objects wich holds reference to the original car data
@@ -84,6 +90,10 @@ onMounted(() => {
   new searchBar().addTo(map.value)
 })
 
+function openCarPopup() {
+  L.popup().setLatLng([20.7086, -103.409774]).setContent('Here!').openOn(map.value)
+}
+
 const router = useRouter()
 const session = getSession()
 
@@ -97,14 +107,16 @@ if (!session) {
   <div ref="mapNode" id="map"></div>
   <ul>
     <li v-for="car in cars" :key="car.id">
-      {{ car.position }}
+      {{ car }}
     </li>
   </ul>
+  <button @click="openCarPopup">open</button>
 </template>
 
 <style scoped>
 #map {
   width: 100%;
+  position: 'relative';
   aspect-ratio: 4 / 3;
   max-width: 40rem;
   margin-inline: auto;
