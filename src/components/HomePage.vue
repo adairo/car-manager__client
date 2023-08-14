@@ -28,7 +28,7 @@ const searchBar = L.Control.extend({
     input.type = 'search'
 
     const searchButton = document.createElement('button')
-    searchButton.textContent = 'Search'
+    searchButton.textContent = 'Search plate'
 
     searchButton.addEventListener('click', () => {
       openCarPopup()
@@ -88,12 +88,30 @@ watch(cars, (newCars) => {
 
 // Draw map
 onMounted(() => {
-  map.value = L.map('map').setView([20.710429418405212, -103.40982443626814], 15)
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
+  const openStreetMap = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap'
-  }).addTo(map.value)
+  })
 
+  const openTopoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+    attribution:
+      'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+  })
+
+  map.value = L.map('map', {
+    center: [20.710429418405212, -103.40982443626814],
+    layers: [openStreetMap, openTopoMap],
+    minZoom: 9,
+    zoom: 10,
+    maxZoom: 17
+  })
+
+  const baseMaps = {
+    openStreetMap,
+    openTopoMap
+  }
+
+  const layerControl = L.control.layers(baseMaps)
+  layerControl.addTo(map.value)
   new searchBar().addTo(map.value)
   map.value.on('click', (e) => {
     L.popup().setLatLng(e.latlng).setContent(`${e.latlng.lat}, ${e.latlng.lng}`).openOn(map.value)
