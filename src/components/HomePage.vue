@@ -14,6 +14,13 @@ const carIcon = L.icon({
   iconSize: [50, 50]
 })
 
+const router = useRouter()
+const session = getSession()
+
+if (!session) {
+  router.push('/login')
+}
+
 const searchBar = L.Control.extend({
   onAdd() {
     const container = document.createElement('div')
@@ -88,17 +95,13 @@ onMounted(() => {
   }).addTo(map.value)
 
   new searchBar().addTo(map.value)
+  map.value.on('click', (e) => {
+    L.popup().setLatLng(e.latlng).setContent(`${e.latlng.lat}, ${e.latlng.lng}`).openOn(map.value)
+  })
 })
 
 function openCarPopup() {
   L.popup().setLatLng([20.7086, -103.409774]).setContent('Here!').openOn(map.value)
-}
-
-const router = useRouter()
-const session = getSession()
-
-if (!session) {
-  router.push('/login')
 }
 </script>
 
