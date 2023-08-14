@@ -92,14 +92,18 @@ onMounted(() => {
     attribution: '© OpenStreetMap'
   })
 
-  const openTopoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-    attribution:
-      'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
-  })
+  var alidadeSmoothDark = L.tileLayer(
+    'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png',
+    {
+      maxZoom: 20,
+      attribution:
+        '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+    }
+  )
 
   map.value = L.map('map', {
     center: [20.710429418405212, -103.40982443626814],
-    layers: [openStreetMap, openTopoMap],
+    layers: [openStreetMap, alidadeSmoothDark],
     minZoom: 9,
     zoom: 10,
     maxZoom: 17
@@ -107,7 +111,7 @@ onMounted(() => {
 
   const baseMaps = {
     openStreetMap,
-    openTopoMap
+    'dark map': alidadeSmoothDark
   }
 
   const layerControl = L.control.layers(baseMaps)
