@@ -7,7 +7,7 @@ import icon from '../components/CarIcon/icon.png'
 import { socket } from '../socket'
 // import { useI18n } from 'vue-i18n'
 import 'leaflet/dist/leaflet.css'
-import { LMap, LTileLayer, LMarker, LIcon, LPopup } from '@vue-leaflet/vue-leaflet'
+import { LMap, LTileLayer, LMarker, LIcon, LPopup, LControlLayers } from '@vue-leaflet/vue-leaflet'
 
 // const { t } = useI18n()
 const cars = ref([])
@@ -185,6 +185,7 @@ onMounted(() => {
         layer-type="base"
         name="darkMap"
       />
+      <l-control-layers />
       <l-marker
         v-for="car in cars"
         :key="car.id"
