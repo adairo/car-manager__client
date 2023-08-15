@@ -3,11 +3,11 @@
 import { useRouter } from 'vue-router'
 import { onMounted, ref } from 'vue'
 import { getSession } from '../lib/session'
-// import _icon from '../components/CarIcon/icon.png'
+import icon from '../components/CarIcon/icon.png'
 import { socket } from '../socket'
 // import { useI18n } from 'vue-i18n'
 import 'leaflet/dist/leaflet.css'
-import { LMap, LTileLayer, LMarker } from '@vue-leaflet/vue-leaflet'
+import { LMap, LTileLayer, LMarker, LIcon } from '@vue-leaflet/vue-leaflet'
 
 // const { t } = useI18n()
 const cars = ref([])
@@ -189,7 +189,9 @@ onMounted(() => {
         v-for="car in cars"
         :key="car.id"
         :lat-lng="{ lat: car.position.x, lng: car.position.y }"
-      />
+      >
+        <l-icon :icon-url="icon" icon-size="50" />
+      </l-marker>
     </l-map>
     <!-- <h1>{{ t('home.carsTitle') }}</h1>
     <div ref="mapNode" id="map"></div> -->
