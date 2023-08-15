@@ -1,20 +1,18 @@
 <!-- eslint-disable no-undef -->
 <script setup>
 import { useRouter } from 'vue-router'
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref } from 'vue'
 import { getSession } from '../lib/session'
-import icon from '../components/CarIcon/icon.png'
+// import _icon from '../components/CarIcon/icon.png'
 import { socket } from '../socket'
-import { useI18n } from 'vue-i18n'
+// import { useI18n } from 'vue-i18n'
+import 'leaflet/dist/leaflet.css'
+import { LMap, LTileLayer, LMarker } from '@vue-leaflet/vue-leaflet'
 
-const { t } = useI18n()
+// const { t } = useI18n()
 const cars = ref([])
 const map = ref(null)
 const carMarkers = ref([])
-const carIcon = L.icon({
-  iconUrl: icon,
-  iconSize: [50, 50]
-})
 
 const router = useRouter()
 const session = getSession()
@@ -23,7 +21,7 @@ if (!session) {
   router.push('/login')
 }
 
-const searchBar = L.Control.extend({
+/* const searchBar = L.Control.extend({
   onAdd() {
     const searchForm = document.createElement('form')
     const input = document.createElement('input')
@@ -55,7 +53,7 @@ const searchBar = L.Control.extend({
     return searchForm
   },
   onRemove() {}
-})
+}) */
 
 function fetchCars() {
   const session = getSession()
@@ -89,7 +87,7 @@ onMounted(() => {
   })
 })
 
-function createCarPopup(carData) {
+/* function createCarPopup(carData) {
   return `
   <div>
     <div class="car-popover">
@@ -118,10 +116,10 @@ function createCarPopup(carData) {
       </div>  
   </div>
   `
-}
+} */
 // Save an array of objects wich holds reference to the original car data
 // and marker object (L.marker)
-watch(cars, (newCars) => {
+/* watch(cars, (newCars) => {
   carMarkers.value = newCars.map((car) => ({
     marker: L.marker([car.position.x, car.position.y], { icon: carIcon }),
     data: car
@@ -130,10 +128,10 @@ watch(cars, (newCars) => {
     car.marker.bindPopup(createCarPopup(car.data)).openPopup()
     car.marker.addTo(map.value)
   })
-})
+}) */
 
 // Draw map
-onMounted(() => {
+/* onMounted(() => {
   const openStreetMap = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap'
   })
@@ -166,13 +164,35 @@ onMounted(() => {
   const layerControl = L.control.layers(baseMaps)
   layerControl.addTo(map.value)
   new searchBar().addTo(map.value)
-})
+}) */
 </script>
 
 <template>
   <div class="container">
-    <h1>{{ t('home.carsTitle') }}</h1>
-    <div ref="mapNode" id="map"></div>
+    <l-map
+      zoom="10"
+      ref="map"
+      style="width: 100%; height: 500px"
+      :center="[20.708692, -103.409774]"
+    >
+      <l-tile-layer
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        layer-type="base"
+        name="OpenStreetMap"
+      />
+      <l-tile-layer
+        url="https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png"
+        layer-type="base"
+        name="darkMap"
+      />
+      <l-marker
+        v-for="car in cars"
+        :key="car.id"
+        :lat-lng="{ lat: car.position.x, lng: car.position.y }"
+      />
+    </l-map>
+    <!-- <h1>{{ t('home.carsTitle') }}</h1>
+    <div ref="mapNode" id="map"></div> -->
   </div>
   <!-- <ul>
     <li v-for="car in cars" :key="car.id">

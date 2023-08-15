@@ -1,0 +1,1 @@
+<template>Exmaple</template>

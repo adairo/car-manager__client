@@ -7,10 +7,12 @@ import { createI18n } from 'vue-i18n'
 import LoginPage from './components/LoginPage.vue'
 import SignupPage from './components/SignupPage.vue'
 import HomePage from './components/HomePage.vue'
+import CarsPage from './components/CarsPage.vue'
 
 const routes = [
   { path: '/login', component: LoginPage },
   { path: '/signup', component: SignupPage },
+  { path: '/cars', component: CarsPage },
   { path: '/', component: HomePage }
 ]
 
