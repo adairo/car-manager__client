@@ -1,4 +1,3 @@
-<!-- eslint-disable no-undef -->
 <script setup>
 import { useRouter } from 'vue-router'
 import { onMounted, ref } from 'vue'
@@ -22,7 +21,6 @@ const { t } = useI18n()
 const cars = ref([])
 const map = ref(null)
 const searchCarInput = ref()
-
 const router = useRouter()
 const session = getSession()
 
@@ -30,42 +28,7 @@ if (!session) {
   router.push('/login')
 }
 
-/* const searchBar = L.Control.extend({
-  onAdd() {
-    const searchForm = document.createElement('form')
-    const input = document.createElement('input')
-    input.type = 'search'
-
-    const searchButton = document.createElement('button')
-    searchButton.textContent = t('home.searchCarButton')
-    searchButton.type = 'submit'
-
-    searchForm.addEventListener('submit', (e) => {
-      e.preventDefault()
-      const carId = Number(input.value)
-      const matchedCar = carMarkers.value.find((car) => Number(car.data.id) === Number(input.value))
-      if (!matchedCar) {
-        return console.error('Car with id ' + carId + ' does not exist')
-      }
-
-      const position = matchedCar.marker.getLatLng()
-      map.value.flyTo(position, 12)
-      // const popup = matchedCar.marker.getPopup()
-      // console.log({ popup })
-      // map.value.openPopup(matchedCar.marker.getPopup())
-      matchedCar.marker.openPopup()
-      // L.popup().setLatLng(position).setContent('Hi').openOn(map.value)
-    })
-
-    searchForm.appendChild(input)
-    searchForm.appendChild(searchButton)
-    return searchForm
-  },
-  onRemove() {}
-}) */
-
 function fetchCars() {
-  const session = getSession()
   const authToken = 'Bearer ' + session
   const url = new URL('http://localhost:3000/cars')
 
@@ -89,10 +52,11 @@ function fetchCars() {
 onMounted(() => {
   fetchCars()
   socket.on('cars:position-updated', (payload) => {
-    const carToUpdateIndex = carMarkers.value.findIndex((car) => car.data.id === payload.carId)
-    carMarkers.value[carToUpdateIndex].marker.setLatLng(
-      L.latLng(payload.position.lattitude, payload.position.longitude)
-    )
+    const carToUpdateIndex = cars.value.findIndex((car) => car.id === payload.carId)
+    cars.value[carToUpdateIndex].position = {
+      x: payload.position.lattitude,
+      y: payload.position.longitude
+    }
   })
 })
 
