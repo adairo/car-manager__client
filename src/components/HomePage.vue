@@ -101,7 +101,7 @@ function handleSearchCar() {
   if (!machedCar) {
     return console.log('No car was found')
   }
-  map.value.leafletObject.flyTo(L.latLng([machedCar.position.x, machedCar.position.y]))
+  map.value.leafletObject.flyTo(L.latLng([machedCar.position.x, machedCar.position.y]), 12)
 }
 </script>
 
@@ -167,15 +167,7 @@ function handleSearchCar() {
         </form></l-control
       >
     </l-map>
-
-    <!-- <div ref="mapNode" id="map"></div> -->
   </div>
-  <!-- <ul>
-    <li v-for="car in cars" :key="car.id">
-      {{ car }}
-    </li>
-  </ul>
-  <button @click="openCarPopup">open</button> -->
 </template>
 
 <style scoped>
@@ -187,21 +179,21 @@ function handleSearchCar() {
 
 .search-form__input {
   padding-inline: 0.6rem;
-  padding-block: 0.3rem;
+  padding-block: 0.35rem;
   border-top-left-radius: 0.4rem;
   border-bottom-left-radius: 0.4rem;
-  border: 2px solid lightslategray;
+  border: 2px solid #94a3b8;
   border-right: none;
 }
 
 .search-form__button {
   padding-inline: 0.6rem;
-  padding-block: 0.3rem;
-  background-color: darkslategray;
-  border-color: darkslategray;
+  padding-block: 0.35rem;
+  background-color: #f1f5f9;
+  border-color: #94a3b8;
   border-top-right-radius: 0.4rem;
   border-bottom-right-radius: 0.4rem;
-  color: white;
+  color: #334155;
   font-weight: 600;
 }
 

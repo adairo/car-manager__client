@@ -20,7 +20,7 @@ const messages = {
   en: {
     home: {
       carsTitle: 'My cars',
-      searchCarButton: 'Search id',
+      searchCarButton: 'Search',
       searchCarHint: 'Enter the car id',
       loginLink: 'Login',
       logoutLink: 'Logout',
@@ -44,7 +44,7 @@ const messages = {
   es: {
     home: {
       carsTitle: 'Mis autos',
-      searchCarButton: 'Buscar id',
+      searchCarButton: 'Buscar',
       loginLink: 'Iniciar sesión',
       logoutLink: 'Salir',
       signupLink: 'Registrarse',
