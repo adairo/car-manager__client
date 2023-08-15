@@ -6,6 +6,9 @@ import icon from '../components/CarIcon/icon.png'
 import { socket } from '../socket'
 import { useI18n } from 'vue-i18n'
 import 'leaflet/dist/leaflet.css'
+import L from 'leaflet'
+import 'leaflet-fullscreen/dist/leaflet.fullscreen.css'
+import 'leaflet-fullscreen/dist/Leaflet.fullscreen'
 import {
   LMap,
   LTileLayer,
@@ -15,7 +18,6 @@ import {
   LControlLayers,
   LControl
 } from '@vue-leaflet/vue-leaflet'
-import L from 'leaflet'
 
 const { t } = useI18n()
 const cars = ref([])
@@ -32,7 +34,7 @@ function fetchCars() {
   const authToken = 'Bearer ' + session
   const url = new URL('http://localhost:3000/cars')
 
-  // get cars positions through normal http request
+  // get cars positions using normal http request
   fetch(url, {
     method: 'GET',
     headers: {
@@ -79,7 +81,9 @@ function handleSearchCar() {
       ref="map"
       style="width: 100%; height: 500px"
       :center="[20.708692, -103.409774]"
+      :options="{ fullscreenControl: true }"
     >
+      <!-- <l-control-fullscreen position="topleft" /> -->
       <l-tile-layer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         layer-type="base"
@@ -160,10 +164,6 @@ function handleSearchCar() {
   color: #334155;
   font-weight: 600;
 }
-
-/* .search-form__input:focus {
-  outline: none;
-} */
 
 .container {
   padding: 1.5rem;
