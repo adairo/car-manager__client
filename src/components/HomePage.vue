@@ -141,7 +141,6 @@ onMounted(() => {
   const alidadeSmoothDark = L.tileLayer(
     'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png',
     {
-      maxZoom: 20,
       attribution:
         '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
     }
@@ -151,12 +150,12 @@ onMounted(() => {
     center: [20.710429418405212, -103.40982443626814],
     layers: [openStreetMap, alidadeSmoothDark],
     minZoom: 9,
+    maxZoom: 17,
+    zoom: 10,
     fullscreenControl: true,
     fullscreenControlOptions: {
       position: 'topleft'
-    },
-    zoom: 10,
-    maxZoom: 17
+    }
   })
 
   const baseMaps = {
