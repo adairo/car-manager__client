@@ -22,6 +22,20 @@ const messages = {
       loginLink: 'Login',
       logoutLink: 'Logout',
       signupLink: 'Signup'
+    },
+    login: {
+      formTitle: 'Login',
+      formDescription: 'Enter your credentials',
+      emailFieldLabel: 'Email',
+      passwordFieldLabel: 'Password',
+      formButtonText: 'Submit data'
+    },
+    signup: {
+      formTitle: 'Signup',
+      formDescription: 'Signup with email and password',
+      emailFieldLabel: 'Email',
+      passwordFieldLabel: 'Password',
+      formButtonText: 'Submit data'
     }
   },
   es: {
@@ -31,6 +45,20 @@ const messages = {
       loginLink: 'Iniciar sesión',
       logoutLink: 'Salir',
       signupLink: 'Registrarse'
+    },
+    login: {
+      formTitle: 'Inicia sesión',
+      formDescription: 'Ingresa tus credenciales',
+      emailFieldLabel: 'Correo',
+      passwordFieldLabel: 'Contraseña',
+      formButtonText: 'Enviar información'
+    },
+    signup: {
+      formTitle: 'Registrarse',
+      formDescription: 'Crear cuenta con correo y contraseña',
+      emailFieldLabel: 'Correo',
+      passwordFieldLabel: 'Contraseña',
+      formButtonText: 'Enviar información'
     }
   }
 }

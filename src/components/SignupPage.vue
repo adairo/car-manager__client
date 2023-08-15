@@ -1,5 +1,6 @@
 <script setup>
 import { reactive, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { z } from 'zod'
 
@@ -9,6 +10,8 @@ const signupSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6, 'Password length must be at least 6')
 })
+
+const { t } = useI18n()
 
 const userData = reactive({
   email: '',
@@ -46,16 +49,16 @@ function submit() {
   <main>
     <form class="form form--full-screen" @submit.prevent="submit">
       <div>
-        <h1 class="form__title">Signup</h1>
-        <p>Signup with email and password</p>
+        <h1 class="form__title">{{ t('signup.formTitle') }}</h1>
+        <p>{{ t('signup.formDescription') }}</p>
       </div>
       <div class="form__field">
-        <label for="email" class="form__label">Email</label>
+        <label for="email" class="form__label">{{ t('signup.emailFieldLabel') }}</label>
         <input v-model="userData.email" required id="email" type="email" class="form__input" />
       </div>
 
       <div class="form__field">
-        <label for="password" class="form__label">Password</label>
+        <label for="password" class="form__label">{{ t('signup.passwordFieldLabel') }}</label>
         <input
           v-model="userData.password"
           required
@@ -67,7 +70,7 @@ function submit() {
       </div>
 
       <div class="form__field">
-        <button type="submit" class="button">Register</button>
+        <button type="submit" class="button">{{ t('signup.formButtonText') }}</button>
       </div>
     </form>
   </main>

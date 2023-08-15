@@ -4,6 +4,7 @@ import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { z } from 'zod'
 import { saveSession } from '../lib/session.js'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
 
@@ -19,6 +20,7 @@ const userData = reactive({
 
 const errorMap = ref({ email: '', password: '' })
 const url = new URL('http://localhost:3000/users/login')
+const { t } = useI18n()
 
 function submit() {
   const parsed = loginSchema.safeParse(userData)
@@ -52,16 +54,16 @@ function submit() {
   <main>
     <form class="form form--full-screen" @submit.prevent="submit">
       <div>
-        <h1 class="form__title">Login</h1>
-        <p>Enter your credentials</p>
+        <h1 class="form__title">{{ t('login.formTitle') }}</h1>
+        <p>{{ t('login.formDescription') }}</p>
       </div>
       <div class="form__field">
-        <label for="email" class="form__label">Email</label>
+        <label for="email" class="form__label">{{ t('login.emailFieldLabel') }}</label>
         <input v-model="userData.email" required id="email" type="email" class="form__input" />
       </div>
 
       <div class="form__field">
-        <label for="password" class="form__label">Password</label>
+        <label for="password" class="form__label">{{ t('login.passwordFieldLabel') }}</label>
         <input
           v-model="userData.password"
           required
@@ -73,7 +75,7 @@ function submit() {
       </div>
 
       <div class="form__field">
-        <button type="submit" class="button">Access</button>
+        <button type="submit" class="button">{{ t('login.formButtonText') }}</button>
       </div>
     </form>
   </main>
