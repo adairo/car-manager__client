@@ -5,7 +5,9 @@ import { onMounted, ref, watch } from 'vue'
 import { getSession } from '../lib/session'
 import icon from '../components/CarIcon/icon.png'
 import { socket } from '../socket'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 const cars = ref([])
 const map = ref(null)
 const carMarkers = ref([])
@@ -161,15 +163,12 @@ onMounted(() => {
   const layerControl = L.control.layers(baseMaps)
   layerControl.addTo(map.value)
   new searchBar().addTo(map.value)
-  /* map.value.on('click', (e) => {
-    L.popup().setLatLng(e.latlng).setContent(`${e.latlng.lat}, ${e.latlng.lng}`).openOn(map.value)
-  }) */
 })
 </script>
 
 <template>
   <div class="container">
-    <h1>My cars</h1>
+    <h1>{{ t('home.carsTitle') }}</h1>
     <div ref="mapNode" id="map"></div>
   </div>
   <!-- <ul>
