@@ -23,20 +23,34 @@ if (!session) {
 
 const searchBar = L.Control.extend({
   onAdd() {
-    const container = document.createElement('div')
+    const searchForm = document.createElement('form')
     const input = document.createElement('input')
     input.type = 'search'
 
     const searchButton = document.createElement('button')
     searchButton.textContent = 'Search plate'
+    searchButton.type = 'submit'
 
-    searchButton.addEventListener('click', () => {
-      openCarPopup()
+    searchForm.addEventListener('submit', (e) => {
+      e.preventDefault()
+      const carId = Number(input.value)
+      const matchedCar = carMarkers.value.find((car) => Number(car.data.id) === Number(input.value))
+      if (!matchedCar) {
+        return console.error('Car with id ' + carId + ' does not exist')
+      }
+
+      const position = matchedCar.marker.getLatLng()
+      map.value.flyTo(position, 12)
+      // const popup = matchedCar.marker.getPopup()
+      // console.log({ popup })
+      // map.value.openPopup(matchedCar.marker.getPopup())
+      matchedCar.marker.openPopup()
+      // L.popup().setLatLng(position).setContent('Hi').openOn(map.value)
     })
 
-    container.appendChild(input)
-    container.appendChild(searchButton)
-    return container
+    searchForm.appendChild(input)
+    searchForm.appendChild(searchButton)
+    return searchForm
   },
   onRemove() {}
 })
@@ -62,7 +76,7 @@ function fetchCars() {
     .catch(console.error.bind(console))
 }
 
-// Fetch cars
+// Fetch cars and listen to socket events
 onMounted(() => {
   fetchCars()
   socket.on('cars:position-updated', (payload) => {
@@ -73,6 +87,36 @@ onMounted(() => {
   })
 })
 
+function createCarPopup(carData) {
+  return `
+  <div>
+    <div class="car-popover">
+      <div>
+        <strong style="font-weight: 800;">Car id</strong>
+        <span>${carData.id}</span>
+        </div>
+      </div>  
+
+      <div>
+        <strong style="font-weight: 800;">Plate</strong>
+        <span>${carData.plate}</span>
+        </div>
+      </div>
+      
+      <div>
+        <strong style="font-weight: 800;">Lattitude</strong>
+        <span>${carData.position.x}</span>
+        </div>
+      </div> 
+      
+      <div>
+        <strong style="font-weight: 800;">Lattitude</strong>
+        <span>${carData.position.y}</span>
+        </div>
+      </div>  
+  </div>
+  `
+}
 // Save an array of objects wich holds reference to the original car data
 // and marker object (L.marker)
 watch(cars, (newCars) => {
@@ -81,7 +125,7 @@ watch(cars, (newCars) => {
     data: car
   }))
   carMarkers.value.forEach((car) => {
-    car.marker.bindPopup(car.data.plate).openPopup()
+    car.marker.bindPopup(createCarPopup(car.data)).openPopup()
     car.marker.addTo(map.value)
   })
 })
@@ -117,14 +161,10 @@ onMounted(() => {
   const layerControl = L.control.layers(baseMaps)
   layerControl.addTo(map.value)
   new searchBar().addTo(map.value)
-  map.value.on('click', (e) => {
+  /* map.value.on('click', (e) => {
     L.popup().setLatLng(e.latlng).setContent(`${e.latlng.lat}, ${e.latlng.lng}`).openOn(map.value)
-  })
+  }) */
 })
-
-function openCarPopup() {
-  L.popup().setLatLng([20.7086, -103.409774]).setContent('Here!').openOn(map.value)
-}
 </script>
 
 <template>
