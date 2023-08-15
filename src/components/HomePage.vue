@@ -7,7 +7,7 @@ import icon from '../components/CarIcon/icon.png'
 import { socket } from '../socket'
 // import { useI18n } from 'vue-i18n'
 import 'leaflet/dist/leaflet.css'
-import { LMap, LTileLayer, LMarker, LIcon } from '@vue-leaflet/vue-leaflet'
+import { LMap, LTileLayer, LMarker, LIcon, LPopup } from '@vue-leaflet/vue-leaflet'
 
 // const { t } = useI18n()
 const cars = ref([])
@@ -191,6 +191,26 @@ onMounted(() => {
         :lat-lng="{ lat: car.position.x, lng: car.position.y }"
       >
         <l-icon :icon-url="icon" icon-size="50" />
+        <l-popup>
+          <div>
+            <div>
+              <span style="font-weight: 800">Car id: </span>
+              <span>{{ car.id }}</span>
+            </div>
+            <div>
+              <span style="font-weight: 800">Plate: </span>
+              <span>{{ car.plate }}</span>
+            </div>
+            <div>
+              <span style="font-weight: 800">Latittude: </span>
+              <span>{{ car.position.x }}</span>
+            </div>
+            <div>
+              <span style="font-weight: 800">Longitude: </span>
+              <span>{{ car.position.y }}</span>
+            </div>
+          </div>
+        </l-popup>
       </l-marker>
     </l-map>
     <!-- <h1>{{ t('home.carsTitle') }}</h1>
