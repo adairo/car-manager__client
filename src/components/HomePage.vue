@@ -5,14 +5,23 @@ import { onMounted, ref } from 'vue'
 import { getSession } from '../lib/session'
 import icon from '../components/CarIcon/icon.png'
 import { socket } from '../socket'
-// import { useI18n } from 'vue-i18n'
+import { useI18n } from 'vue-i18n'
 import 'leaflet/dist/leaflet.css'
-import { LMap, LTileLayer, LMarker, LIcon, LPopup, LControlLayers } from '@vue-leaflet/vue-leaflet'
+import {
+  LMap,
+  LTileLayer,
+  LMarker,
+  LIcon,
+  LPopup,
+  LControlLayers,
+  LControl
+} from '@vue-leaflet/vue-leaflet'
+import L from 'leaflet'
 
-// const { t } = useI18n()
+const { t } = useI18n()
 const cars = ref([])
 const map = ref(null)
-const carMarkers = ref([])
+const searchCarInput = ref()
 
 const router = useRouter()
 const session = getSession()
@@ -87,90 +96,22 @@ onMounted(() => {
   })
 })
 
-/* function createCarPopup(carData) {
-  return `
-  <div>
-    <div class="car-popover">
-      <div>
-        <strong style="font-weight: 800;">Car id</strong>
-        <span>${carData.id}</span>
-        </div>
-      </div>  
-
-      <div>
-        <strong style="font-weight: 800;">Plate</strong>
-        <span>${carData.plate}</span>
-        </div>
-      </div>
-      
-      <div>
-        <strong style="font-weight: 800;">Lattitude</strong>
-        <span>${carData.position.x}</span>
-        </div>
-      </div> 
-      
-      <div>
-        <strong style="font-weight: 800;">Lattitude</strong>
-        <span>${carData.position.y}</span>
-        </div>
-      </div>  
-  </div>
-  `
-} */
-// Save an array of objects wich holds reference to the original car data
-// and marker object (L.marker)
-/* watch(cars, (newCars) => {
-  carMarkers.value = newCars.map((car) => ({
-    marker: L.marker([car.position.x, car.position.y], { icon: carIcon }),
-    data: car
-  }))
-  carMarkers.value.forEach((car) => {
-    car.marker.bindPopup(createCarPopup(car.data)).openPopup()
-    car.marker.addTo(map.value)
-  })
-}) */
-
-// Draw map
-/* onMounted(() => {
-  const openStreetMap = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap'
-  })
-
-  const alidadeSmoothDark = L.tileLayer(
-    'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png',
-    {
-      attribution:
-        '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
-    }
-  )
-
-  map.value = L.map('map', {
-    center: [20.710429418405212, -103.40982443626814],
-    layers: [openStreetMap, alidadeSmoothDark],
-    minZoom: 9,
-    maxZoom: 17,
-    zoom: 10,
-    fullscreenControl: true,
-    fullscreenControlOptions: {
-      position: 'topleft'
-    }
-  })
-
-  const baseMaps = {
-    openStreetMap,
-    'dark map': alidadeSmoothDark
+function handleSearchCar() {
+  const machedCar = cars.value.find((car) => car.id === Number(searchCarInput.value))
+  if (!machedCar) {
+    return console.log('No car was found')
   }
-
-  const layerControl = L.control.layers(baseMaps)
-  layerControl.addTo(map.value)
-  new searchBar().addTo(map.value)
-}) */
+  map.value.leafletObject.flyTo(L.latLng([machedCar.position.x, machedCar.position.y]))
+}
 </script>
 
 <template>
   <div class="container">
+    <h1>{{ t('home.carsTitle') }}</h1>
     <l-map
-      zoom="10"
+      :zoom="10"
+      :min-zoom="9"
+      :max-zoom="17"
       ref="map"
       style="width: 100%; height: 500px"
       :center="[20.708692, -103.409774]"
@@ -185,13 +126,14 @@ onMounted(() => {
         layer-type="base"
         name="darkMap"
       />
+
       <l-control-layers />
       <l-marker
         v-for="car in cars"
         :key="car.id"
         :lat-lng="{ lat: car.position.x, lng: car.position.y }"
       >
-        <l-icon :icon-url="icon" icon-size="50" />
+        <l-icon :icon-url="icon" :icon-size="[50, 50]" />
         <l-popup>
           <div>
             <div>
@@ -213,9 +155,20 @@ onMounted(() => {
           </div>
         </l-popup>
       </l-marker>
+      <l-control class="leaflet-control leaflet-demo-control" position="bottomleft">
+        <form @submit.prevent="handleSearchCar" class="search-form">
+          <input
+            class="search-form__input"
+            v-model="searchCarInput"
+            type="search"
+            :placeholder="t('home.searchCarHint')"
+          />
+          <button class="search-form__button">{{ t('home.searchCarButton') }}</button>
+        </form></l-control
+      >
     </l-map>
-    <!-- <h1>{{ t('home.carsTitle') }}</h1>
-    <div ref="mapNode" id="map"></div> -->
+
+    <!-- <div ref="mapNode" id="map"></div> -->
   </div>
   <!-- <ul>
     <li v-for="car in cars" :key="car.id">
@@ -231,6 +184,30 @@ onMounted(() => {
   position: 'relative';
   aspect-ratio: 4 / 3;
 }
+
+.search-form__input {
+  padding-inline: 0.6rem;
+  padding-block: 0.3rem;
+  border-top-left-radius: 0.4rem;
+  border-bottom-left-radius: 0.4rem;
+  border: 2px solid lightslategray;
+  border-right: none;
+}
+
+.search-form__button {
+  padding-inline: 0.6rem;
+  padding-block: 0.3rem;
+  background-color: darkslategray;
+  border-color: darkslategray;
+  border-top-right-radius: 0.4rem;
+  border-bottom-right-radius: 0.4rem;
+  color: white;
+  font-weight: 600;
+}
+
+/* .search-form__input:focus {
+  outline: none;
+} */
 
 .container {
   padding: 1.5rem;

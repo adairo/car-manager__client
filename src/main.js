@@ -21,6 +21,7 @@ const messages = {
     home: {
       carsTitle: 'My cars',
       searchCarButton: 'Search id',
+      searchCarHint: 'Enter the car id',
       loginLink: 'Login',
       logoutLink: 'Logout',
       signupLink: 'Signup'
@@ -46,7 +47,8 @@ const messages = {
       searchCarButton: 'Buscar id',
       loginLink: 'Iniciar sesión',
       logoutLink: 'Salir',
-      signupLink: 'Registrarse'
+      signupLink: 'Registrarse',
+      searchCarHint: 'Ingresa el id del auto'
     },
     login: {
       formTitle: 'Inicia sesión',
