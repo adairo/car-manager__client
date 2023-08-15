@@ -2,10 +2,12 @@
 import { useRouter } from 'vue-router'
 import { clearSession, getSession } from './lib/session'
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const session = ref(getSession())
 const isAuth = computed(() => !!session.value)
 const router = useRouter()
+const { t } = useI18n()
 
 function logout() {
   clearSession()
@@ -41,9 +43,9 @@ function logout() {
             <option value="es">Español</option>
           </select>
         </div>
-        <router-link v-if="!isAuth" to="/login">Login</router-link>
-        <button v-else @click="logout">Logout</button>
-        <router-link to="/signup">Signup</router-link>
+        <router-link v-if="!isAuth" to="/login">{{ t('home.loginLink') }}</router-link>
+        <button v-else @click="logout">{{ t('home.logoutLink') }}</button>
+        <router-link v-if="!isAuth" to="/signup">{{ t('home.signupLink') }}</router-link>
       </ul>
     </nav>
   </header>

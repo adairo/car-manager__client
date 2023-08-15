@@ -30,7 +30,7 @@ const searchBar = L.Control.extend({
     input.type = 'search'
 
     const searchButton = document.createElement('button')
-    searchButton.textContent = 'Search plate'
+    searchButton.textContent = t('home.searchCarButton')
     searchButton.type = 'submit'
 
     searchForm.addEventListener('submit', (e) => {
@@ -138,7 +138,7 @@ onMounted(() => {
     attribution: '© OpenStreetMap'
   })
 
-  var alidadeSmoothDark = L.tileLayer(
+  const alidadeSmoothDark = L.tileLayer(
     'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png',
     {
       maxZoom: 20,
@@ -151,6 +151,10 @@ onMounted(() => {
     center: [20.710429418405212, -103.40982443626814],
     layers: [openStreetMap, alidadeSmoothDark],
     minZoom: 9,
+    fullscreenControl: true,
+    fullscreenControlOptions: {
+      position: 'topleft'
+    },
     zoom: 10,
     maxZoom: 17
   })

@@ -17,12 +17,20 @@ const routes = [
 const messages = {
   en: {
     home: {
-      carsTitle: 'My cars'
+      carsTitle: 'My cars',
+      searchCarButton: 'Search id',
+      loginLink: 'Login',
+      logoutLink: 'Logout',
+      signupLink: 'Signup'
     }
   },
   es: {
     home: {
-      carsTitle: 'Mis autos'
+      carsTitle: 'Mis autos',
+      searchCarButton: 'Buscar id',
+      loginLink: 'Iniciar sesión',
+      logoutLink: 'Salir',
+      signupLink: 'Registrarse'
     }
   }
 }
