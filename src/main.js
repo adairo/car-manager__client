@@ -19,7 +19,7 @@ const routes = [
 const messages = {
   en: {
     home: {
-      carsTitle: 'My cars',
+      carsTitle: 'Cars view',
       searchCarButton: 'Search',
       searchCarHint: 'Enter the car id',
       loginLink: 'Login',
@@ -47,7 +47,7 @@ const messages = {
   },
   es: {
     home: {
-      carsTitle: 'Mis autos',
+      carsTitle: 'Vista de autos',
       searchCarButton: 'Buscar',
       loginLink: 'Iniciar sesión',
       logoutLink: 'Salir',
