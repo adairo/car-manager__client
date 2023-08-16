@@ -28,7 +28,7 @@ if (!session) {
 const { t, locale } = useI18n()
 const cars = ref([])
 const map = ref(null)
-// const showCarForm = ref(null);
+const showCarForm = ref(false)
 const searchCarInput = ref()
 const router = useRouter()
 
@@ -49,10 +49,10 @@ const mapProps = {
   options: { fullscreenControl: true }
 }
 
-function fetchCars() {
-  const authToken = 'Bearer ' + session
-  const url = new URL('http://localhost:3000/cars')
+const url = new URL('http://localhost:3000/cars')
+const authToken = 'Bearer ' + session
 
+function fetchCars() {
   // get cars positions using normal http request
   fetch(url, {
     method: 'GET',
@@ -69,6 +69,19 @@ function fetchCars() {
     .catch(console.error.bind(console))
 }
 
+function handleDeleteCar(carId) {
+  fetch(`http://localhost:3000/cars/${carId}`, {
+    method: 'DELETE',
+    headers: {
+      authorization: authToken,
+      accept: 'application/json',
+      'Content-Type': 'application/json'
+    }
+  }).then(() => {
+    cars.value = cars.value.filter((car) => car.id !== carId)
+  })
+}
+
 // Fetch cars and listen to socket events
 onMounted(() => {
   fetchCars()
@@ -81,12 +94,20 @@ onMounted(() => {
   })
 })
 
+function positionToLatLng(position) {
+  return L.latLng([position.x, position.y])
+}
+
+function mapFlyTo(latLng, zoom = 12) {
+  map.value.leafletObject.flyTo(latLng, zoom)
+}
+
 function handleSearchCar() {
   const machedCar = cars.value.find((car) => car.id === Number(searchCarInput.value))
   if (!machedCar) {
     return console.log('No car was found')
   }
-  map.value.leafletObject.flyTo(L.latLng([machedCar.position.x, machedCar.position.y]), 12)
+  mapFlyTo(positionToLatLng(machedCar.position))
 }
 </script>
 
@@ -161,7 +182,7 @@ function handleSearchCar() {
           </div>
           <div class="car-card__actions">
             <!-- {{ formatPosition(car.position) }} -->
-            <button class="car-card__button">
+            <button @click="handleDeleteCar(car.id)" class="car-card__button">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -193,9 +214,9 @@ function handleSearchCar() {
                   d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
                 />
               </svg>
-              <span>Editar</span>
+              <span>{{ t('home.editCarButton') }}</span>
             </button>
-            <button class="car-card__button">
+            <button @click="mapFlyTo(positionToLatLng(car.position))" class="car-card__button">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -215,13 +236,24 @@ function handleSearchCar() {
                   d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
                 />
               </svg>
-
-              <span>Ubicación</span>
+              <span>{{ t('home.locateCarButton') }}</span>
             </button>
           </div>
         </div>
       </div>
-      <button class="create-car-button">{{ t('home.registerCarButton') }}</button>
+      <button @click="showCarForm = !showCarForm" class="create-car-button">
+        {{ t('home.registerCarButton') }}
+      </button>
+      <form class="form" v-show="showCarForm">
+        <div class="form__field">
+          <label for="newcar-plate">Matrícula</label>
+          <input type="text" />
+        </div>
+        <div class="form__field form-buttons">
+          <button @click="showCarForm = false" type="button" class="button">Cancelar</button>
+          <button type="button" class="button">Guardar</button>
+        </div>
+      </form>
     </div>
   </div>
 </template>
@@ -233,8 +265,16 @@ function handleSearchCar() {
   aspect-ratio: 4 / 3;
 }
 
+.form-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+  gap: 0.5rem;
+}
+
 .create-car-button {
   padding-block: 0.8rem;
+  margin-top: 0.5rem;
 }
 
 .page-title {
