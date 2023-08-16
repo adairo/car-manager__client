@@ -54,7 +54,7 @@ const timeFormatter = computed(
 )
 
 const registerCarSchema = z.object({
-  plate: z.string(),
+  plate: z.string().transform((plate) => plate.toUpperCase()),
   position: z.object({
     lattitude: z.coerce.number(),
     longitude: z.coerce.number()
@@ -63,7 +63,7 @@ const registerCarSchema = z.object({
 
 const editCarSchema = z.object({
   id: z.number(),
-  plate: z.string()
+  plate: z.string().transform((plate) => plate.toUpperCase())
 })
 
 const mapProps = {
