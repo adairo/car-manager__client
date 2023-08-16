@@ -31,11 +31,19 @@ const { t, locale } = useI18n()
 const cars = ref([])
 const map = ref(null)
 const registerCarDialog = ref(null)
+const editCarDialog = ref(null)
+
 const searchCarInput = ref()
 const router = useRouter()
+
 const newCarData = ref({
   plate: '',
   position: { lattitude: '', longitude: '' }
+})
+
+const editCarData = ref({
+  id: undefined,
+  plate: ''
 })
 
 const timeFormatter = computed(
@@ -51,6 +59,11 @@ const registerCarSchema = z.object({
     lattitude: z.coerce.number(),
     longitude: z.coerce.number()
   })
+})
+
+const editCarSchema = z.object({
+  id: z.number(),
+  plate: z.string()
 })
 
 const mapProps = {
@@ -112,7 +125,7 @@ function handleSearchCar() {
 }
 
 function handleDeleteCar(carId) {
-  if (!window.confirm('¡Estás seguro de que quieres eliminar este auto?')) {
+  if (!window.confirm('¿Estás seguro de que quieres eliminar este auto?')) {
     return console.log('delete-car aborted')
   }
   fetch(`http://localhost:3000/cars/${carId}`, {
@@ -131,6 +144,25 @@ function handleToggleDialog() {
   registerCarDialog.value.showModal()
 }
 
+function openEditDialog(id) {
+  const carToEdit = cars.value.find((car) => car.id === id)
+  editCarData.value.id = carToEdit.id
+  editCarData.value.plate = carToEdit.plate
+
+  editCarDialog.value.showModal()
+}
+
+function closeEditDialog() {
+  editCarDialog.value.close()
+}
+
+onMounted(() => {
+  editCarDialog.value.addEventListener('close', () => {
+    editCarData.value.id = undefined
+    editCarData.value.plate = ''
+  })
+})
+
 function handleRegisterCar() {
   const payload = registerCarSchema.safeParse(newCarData.value)
   if (!payload.success) {
@@ -145,6 +177,22 @@ function handleRegisterCar() {
       newCarData.value.plate = ''
       registerCarDialog.value.close()
     })
+    .catch((e) => {
+      console.log(e)
+    })
+}
+
+function handleEditCar() {
+  const payload = editCarSchema.safeParse(editCarData.value)
+  if (!payload.success) {
+    return alert('Hay un error en los datos del formulario')
+  }
+  xfetch
+    .patch('http://localhost:3000/cars/' + payload.data.id, {
+      body: JSON.stringify(payload.data)
+    })
+    .then(fetchCars)
+    .then(() => editCarDialog.value.close())
     .catch((e) => {
       console.log(e)
     })
@@ -239,7 +287,7 @@ function handleRegisterCar() {
               </svg>
             </button>
 
-            <button class="car-card__button">
+            <button @click="openEditDialog(car.id)" class="car-card__button">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -286,7 +334,7 @@ function handleRegisterCar() {
       </button>
       <dialog ref="registerCarDialog" class="register-dialog">
         <form class="form" style="box-shadow: none" @submit.prevent="handleRegisterCar">
-          <h3>Registrar auto</h3>
+          <h3 class="form__title">Registrar auto</h3>
           <div class="form__field">
             <label for="newcar-plate">Matrícula</label>
             <input v-model="newCarData.plate" required type="text" />
@@ -303,6 +351,20 @@ function handleRegisterCar() {
             <button @click="registerCarDialog.close()" type="button" class="button">
               Cancelar
             </button>
+            <button type="submit" class="button">Guardar</button>
+          </div>
+        </form>
+      </dialog>
+      <dialog ref="editCarDialog" class="register-dialog">
+        <form class="form" style="box-shadow: none" @submit.prevent="handleEditCar">
+          <h3 class="form__title">Editar auto</h3>
+          <div class="form__field">
+            <label for="newcar-plate">Matrícula</label>
+            <input v-model="editCarData.plate" required type="text" />
+          </div>
+
+          <div class="form__field form-buttons">
+            <button @click="closeEditDialog" type="button" class="button">Cancelar</button>
             <button type="submit" class="button">Guardar</button>
           </div>
         </form>

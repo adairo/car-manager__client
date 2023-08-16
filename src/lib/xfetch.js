@@ -14,5 +14,6 @@ const createFetcher = (method) => (url, options) =>
 export const xfetch = {
   get: createFetcher('GET'),
   post: createFetcher('POST'),
-  delete: createFetcher('DELETE')
+  delete: createFetcher('DELETE'),
+  patch: createFetcher('PATCH')
 }
