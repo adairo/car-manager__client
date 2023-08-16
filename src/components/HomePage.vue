@@ -48,8 +48,8 @@ const timeFormatter = computed(
 const registerCarSchema = z.object({
   plate: z.string(),
   position: z.object({
-    lattitude: z.number(),
-    longitude: z.number()
+    lattitude: z.coerce.number(),
+    longitude: z.coerce.number()
   })
 })
 
