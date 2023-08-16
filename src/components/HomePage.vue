@@ -19,6 +19,7 @@ import {
   LControl
 } from '@vue-leaflet/vue-leaflet'
 import { xfetch } from '../lib/xfetch'
+import { z } from 'zod'
 
 const session = getSession()
 
@@ -29,11 +30,13 @@ if (!session) {
 const { t, locale } = useI18n()
 const cars = ref([])
 const map = ref(null)
-const showCarForm = ref(false)
+const registerCarDialog = ref(null)
 const searchCarInput = ref()
 const router = useRouter()
 const newCarData = ref({
-  plate: ''
+  plate: '',
+  lattitude: '',
+  longitude: ''
 })
 
 const timeFormatter = computed(
@@ -42,6 +45,12 @@ const timeFormatter = computed(
     new Intl.DateTimeFormat(locale.value, { dateStyle: 'short', timeStyle: 'short' })
   )
 )
+
+const registerCarSchema = z.object({
+  plate: z.string(),
+  lattitude: z.number().optional(),
+  longitude: z.number().optional()
+})
 
 const mapProps = {
   zoom: 10,
@@ -117,13 +126,26 @@ function handleDeleteCar(carId) {
   })
 }
 
+function handleToggleDialog() {
+  registerCarDialog.value.showModal()
+}
+
 function handleRegisterCar() {
+  const payload = registerCarSchema.safeParse(newCarData.value)
+  if (!payload.success) {
+    return alert('Hay un error en los datos del formulario')
+  }
   xfetch
-    .post('http://localhost:3000/cars', { body: JSON.stringify({ plate: newCarData.value.plate }) })
+    .post('http://localhost:3000/cars', {
+      body: JSON.stringify(payload.data)
+    })
     .then((car) => cars.value.push(car))
     .then(() => {
       newCarData.value.plate = ''
-      showCarForm.value = false
+      registerCarDialog.value.close()
+    })
+    .catch((e) => {
+      console.log(e)
     })
 }
 </script>
@@ -258,19 +280,32 @@ function handleRegisterCar() {
           </div>
         </div>
       </div>
-      <button @click="showCarForm = !showCarForm" class="create-car-button button-full">
+      <button @click="handleToggleDialog" class="create-car-button button-full">
         {{ t('home.registerCarButton') }}
       </button>
-      <form class="form" v-show="showCarForm">
-        <div class="form__field">
-          <label for="newcar-plate">Matrícula</label>
-          <input v-model="newCarData.plate" required type="text" />
-        </div>
-        <div class="form__field form-buttons">
-          <button @click="showCarForm = false" type="button" class="button">Cancelar</button>
-          <button @submit.prevent="handleRegisterCar" type="submite" class="button">Guardar</button>
-        </div>
-      </form>
+      <dialog ref="registerCarDialog" class="register-dialog">
+        <form class="form" style="box-shadow: none" @submit.prevent="handleRegisterCar">
+          <h3>Registrar auto</h3>
+          <div class="form__field">
+            <label for="newcar-plate">Matrícula</label>
+            <input v-model="newCarData.plate" required type="text" />
+          </div>
+          <div class="form__field">
+            <label for="newcar-lat">Latitud</label>
+            <input v-model="newCarData.lattitude" type="number" />
+          </div>
+          <div class="form__field">
+            <label for="newcar-lat">Latitud</label>
+            <input v-model="newCarData.longitude" type="number" />
+          </div>
+          <div class="form__field form-buttons">
+            <button @click="registerCarDialog.close()" type="button" class="button">
+              Cancelar
+            </button>
+            <button type="submit" class="button">Guardar</button>
+          </div>
+        </form>
+      </dialog>
     </div>
   </div>
 </template>
@@ -382,6 +417,12 @@ function handleRegisterCar() {
   align-items: center;
   grid-template-columns: auto 1fr;
   padding: 0.2rem;
+}
+
+.register-dialog {
+  left: 50vw;
+  top: 50vh;
+  transform: translate(-50%, -50%);
 }
 
 .popup {
