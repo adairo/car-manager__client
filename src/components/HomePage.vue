@@ -35,8 +35,7 @@ const searchCarInput = ref()
 const router = useRouter()
 const newCarData = ref({
   plate: '',
-  lattitude: '',
-  longitude: ''
+  position: { lattitude: '', longitude: '' }
 })
 
 const timeFormatter = computed(
@@ -48,8 +47,10 @@ const timeFormatter = computed(
 
 const registerCarSchema = z.object({
   plate: z.string(),
-  lattitude: z.number().optional(),
-  longitude: z.number().optional()
+  position: z.object({
+    lattitude: z.number(),
+    longitude: z.number()
+  })
 })
 
 const mapProps = {
@@ -292,11 +293,11 @@ function handleRegisterCar() {
           </div>
           <div class="form__field">
             <label for="newcar-lat">Latitud</label>
-            <input v-model="newCarData.lattitude" type="number" />
+            <input v-model="newCarData.position.lattitude" type="number" />
           </div>
           <div class="form__field">
             <label for="newcar-lat">Latitud</label>
-            <input v-model="newCarData.longitude" type="number" />
+            <input v-model="newCarData.position.longitude" type="number" />
           </div>
           <div class="form__field form-buttons">
             <button @click="registerCarDialog.close()" type="button" class="button">
