@@ -341,11 +341,21 @@ function handleEditCar() {
           </div>
           <div class="form__field">
             <label for="newcar-lat">Latitud</label>
-            <input v-model="newCarData.position.lattitude" type="text" inputmode="decimal" />
+            <input
+              v-model="newCarData.position.lattitude"
+              required
+              type="text"
+              inputmode="decimal"
+            />
           </div>
           <div class="form__field">
-            <label for="newcar-lat">Latitud</label>
-            <input v-model="newCarData.position.longitude" type="text" inputmode="decimal" />
+            <label for="newcar-lat">Longitud</label>
+            <input
+              v-model="newCarData.position.longitude"
+              required
+              type="text"
+              inputmode="decimal"
+            />
           </div>
           <div class="form__field form-buttons">
             <button @click="registerCarDialog.close()" type="button" class="button">
