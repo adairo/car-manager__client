@@ -73,19 +73,6 @@ function fetchCars() {
     .catch(console.error.bind(console))
 }
 
-function handleDeleteCar(carId) {
-  fetch(`http://localhost:3000/cars/${carId}`, {
-    method: 'DELETE',
-    headers: {
-      authorization: authToken,
-      accept: 'application/json',
-      'Content-Type': 'application/json'
-    }
-  }).then(() => {
-    cars.value = cars.value.filter((car) => car.id !== carId)
-  })
-}
-
 // Fetch cars and listen to socket events
 onMounted(() => {
   fetchCars()
@@ -112,6 +99,22 @@ function handleSearchCar() {
     return console.log('No car was found')
   }
   mapFlyTo(positionToLatLng(machedCar.position))
+}
+
+function handleDeleteCar(carId) {
+  if (!window.confirm('¡Estás seguro de que quieres eliminar este auto?')) {
+    return console.log('delete-car aborted')
+  }
+  fetch(`http://localhost:3000/cars/${carId}`, {
+    method: 'DELETE',
+    headers: {
+      authorization: authToken,
+      accept: 'application/json',
+      'Content-Type': 'application/json'
+    }
+  }).then(() => {
+    cars.value = cars.value.filter((car) => car.id !== carId)
+  })
 }
 
 function handleRegisterCar() {
