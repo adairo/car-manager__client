@@ -64,7 +64,7 @@ function logout() {
   height: 24px;
 }
 .header {
-  background-color: rgb(246, 246, 246);
+  background-color: rgb(237, 237, 237);
   padding-inline: 0.8rem;
   padding-block: 0.5rem;
   display: flex;

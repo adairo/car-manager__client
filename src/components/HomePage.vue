@@ -19,15 +19,26 @@ import {
   LControl
 } from '@vue-leaflet/vue-leaflet'
 
+const session = getSession()
+
+if (!session) {
+  router.push('/login')
+}
+
 const { t } = useI18n()
 const cars = ref([])
 const map = ref(null)
 const searchCarInput = ref()
 const router = useRouter()
-const session = getSession()
 
-if (!session) {
-  router.push('/login')
+const mapProps = {
+  zoom: 10,
+  'min-zoom': 9,
+  'max-zoom': 17,
+  ref: map,
+  style: { width: '100%', height: '500px' },
+  center: [20.708692, -103.409774],
+  options: { fullscreenControl: true }
 }
 
 function fetchCars() {
@@ -73,17 +84,8 @@ function handleSearchCar() {
 
 <template>
   <div class="container">
-    <h1>{{ t('home.carsTitle') }}</h1>
-    <l-map
-      :zoom="10"
-      :min-zoom="9"
-      :max-zoom="17"
-      ref="map"
-      style="width: 100%; height: 500px"
-      :center="[20.708692, -103.409774]"
-      :options="{ fullscreenControl: true }"
-    >
-      <!-- <l-control-fullscreen position="topleft" /> -->
+    <h1 class="page-title">{{ t('home.carsTitle') }}</h1>
+    <l-map v-bind="mapProps">
       <l-tile-layer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         layer-type="base"
@@ -143,6 +145,11 @@ function handleSearchCar() {
   width: 100%;
   position: 'relative';
   aspect-ratio: 4 / 3;
+}
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
 }
 
 .search-form__input {
