@@ -18,6 +18,7 @@ import {
   LControlLayers,
   LControl
 } from '@vue-leaflet/vue-leaflet'
+import { xfetch } from '../lib/xfetch'
 
 const session = getSession()
 
@@ -31,6 +32,9 @@ const map = ref(null)
 const showCarForm = ref(false)
 const searchCarInput = ref()
 const router = useRouter()
+const newCarData = ref({
+  plate: ''
+})
 
 const timeFormatter = computed(
   () => (
@@ -108,6 +112,16 @@ function handleSearchCar() {
     return console.log('No car was found')
   }
   mapFlyTo(positionToLatLng(machedCar.position))
+}
+
+function handleRegisterCar() {
+  xfetch
+    .post('http://localhost:3000/cars', { body: JSON.stringify({ plate: newCarData.value.plate }) })
+    .then((car) => cars.value.push(car))
+    .then(() => {
+      newCarData.value.plate = ''
+      showCarForm.value = false
+    })
 }
 </script>
 
@@ -241,17 +255,17 @@ function handleSearchCar() {
           </div>
         </div>
       </div>
-      <button @click="showCarForm = !showCarForm" class="create-car-button">
+      <button @click="showCarForm = !showCarForm" class="create-car-button button-full">
         {{ t('home.registerCarButton') }}
       </button>
       <form class="form" v-show="showCarForm">
         <div class="form__field">
           <label for="newcar-plate">Matrícula</label>
-          <input type="text" />
+          <input v-model="newCarData.plate" required type="text" />
         </div>
         <div class="form__field form-buttons">
           <button @click="showCarForm = false" type="button" class="button">Cancelar</button>
-          <button type="button" class="button">Guardar</button>
+          <button @submit.prevent="handleRegisterCar" type="submite" class="button">Guardar</button>
         </div>
       </form>
     </div>
@@ -261,8 +275,15 @@ function handleSearchCar() {
 <style scoped>
 #map {
   width: 100%;
-  position: 'relative';
   aspect-ratio: 4 / 3;
+}
+
+.container {
+  padding: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  max-width: 1200px;
+  margin-inline: auto;
 }
 
 .form-buttons {
@@ -303,18 +324,16 @@ function handleSearchCar() {
   font-weight: 600;
 }
 
-.container {
-  padding: 1.5rem;
-  display: grid;
-  grid-template-columns: 1fr auto;
-}
-
 .cars-container {
   padding: 1rem;
   margin-top: 1.8rem;
-  display: flex;
-  flex-direction: column;
   gap: 0.6rem;
+  height: 500px;
+  overflow-y: scroll;
+}
+
+.cars-container > * + * {
+  margin-top: 0.3rem;
 }
 
 .car-card {
