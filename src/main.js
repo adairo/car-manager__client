@@ -24,7 +24,9 @@ const messages = {
       searchCarHint: 'Enter the car id',
       loginLink: 'Login',
       logoutLink: 'Logout',
-      signupLink: 'Signup'
+      signupLink: 'Signup',
+      registerCarButton: 'Register new car',
+      createdAtMessage: 'Registered at {time}'
     },
     login: {
       formTitle: 'Login',
@@ -48,7 +50,9 @@ const messages = {
       loginLink: 'Iniciar sesión',
       logoutLink: 'Salir',
       signupLink: 'Registrarse',
-      searchCarHint: 'Ingresa el id del auto'
+      searchCarHint: 'Ingresa el id del auto',
+      registerCarButton: 'Registrar nuevo auto',
+      createdAtMessage: 'Registrado el {time}'
     },
     login: {
       formTitle: 'Inicia sesión',
