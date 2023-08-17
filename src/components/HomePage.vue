@@ -53,13 +53,25 @@ const timeFormatter = computed(
   )
 )
 
-const registerCarSchema = z.object({
-  plate: z.string().transform((plate) => plate.toUpperCase()),
-  position: z.object({
-    lattitude: z.coerce.number(),
-    longitude: z.coerce.number()
+const registerCarSchema = z
+  .object({
+    plate: z.string().transform((plate) => plate.toUpperCase()),
+    position: z.object({
+      lattitude: z.literal('').or(z.coerce.number()),
+      longitude: z.literal('').or(z.coerce.number())
+    })
   })
-})
+  .refine((carData) => {
+    const { lattitude, longitude } = carData.position
+    return (lattitude === '' && longitude === '') || (lattitude !== '' && longitude !== '')
+  })
+  .transform((carData) => {
+    if (carData.position.longitude === '') {
+      return { plate: carData.plate }
+    }
+
+    return carData
+  })
 
 const editCarSchema = z.object({
   id: z.number(),
@@ -341,21 +353,11 @@ function handleEditCar() {
             </div>
             <div class="form__field">
               <label for="newcar-lat">Latitud</label>
-              <input
-                v-model="newCarData.position.lattitude"
-                required
-                type="text"
-                inputmode="decimal"
-              />
+              <input v-model="newCarData.position.lattitude" type="text" inputmode="decimal" />
             </div>
             <div class="form__field">
               <label for="newcar-lat">Longitud</label>
-              <input
-                v-model="newCarData.position.longitude"
-                required
-                type="text"
-                inputmode="decimal"
-              />
+              <input v-model="newCarData.position.longitude" type="text" inputmode="decimal" />
             </div>
             <div class="form__field form-buttons">
               <button @click="registerCarDialog.close()" type="button" class="button">
