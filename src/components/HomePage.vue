@@ -394,14 +394,22 @@ function handleEditCar() {
 
 .container {
   padding: 1.5rem;
-
   max-width: 1200px;
   margin-inline: auto;
 }
 
 .map-container {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  gap: 1rem;
+  /* grid-template-columns: 1fr 24rem; */
+}
+
+@media (min-width: 800px) {
+  .map-container {
+    grid-template-rows: auto;
+    grid-template-columns: 1fr 24rem;
+  }
 }
 
 .form-buttons {
@@ -443,8 +451,6 @@ function handleEditCar() {
 }
 
 .cars-container {
-  padding-inline: 1rem;
-  margin-top: 0;
   gap: 0.6rem;
   height: 500px;
   overflow-y: scroll;
