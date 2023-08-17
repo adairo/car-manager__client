@@ -175,6 +175,7 @@ function handleRegisterCar() {
     .then((car) => cars.value.push(car))
     .then(() => {
       newCarData.value.plate = ''
+      newCarData.value.position = { lattitude: '', longitude: '' }
       registerCarDialog.value.close()
     })
     .catch((e) => {
