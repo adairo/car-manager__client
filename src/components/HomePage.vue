@@ -53,12 +53,19 @@ const timeFormatter = computed(
   )
 )
 
+const plateSchema = z
+  .string()
+  .trim()
+  .nonempty()
+  .regex(/[a-zA-Z0-9]{7}/)
+  .transform((plate) => plate.toUpperCase())
+
 const registerCarSchema = z
   .object({
-    plate: z.string().transform((plate) => plate.toUpperCase()),
+    plate: plateSchema.transform((plate) => plate.toUpperCase()),
     position: z.object({
-      lattitude: z.literal('').or(z.coerce.number()),
-      longitude: z.literal('').or(z.coerce.number())
+      lattitude: z.literal('').or(z.coerce.number().min(-90.0).max(90.0)),
+      longitude: z.literal('').or(z.coerce.number().min(-180.0).max(180.0))
     })
   })
   .refine((carData) => {
@@ -75,7 +82,7 @@ const registerCarSchema = z
 
 const editCarSchema = z.object({
   id: z.number(),
-  plate: z.string().transform((plate) => plate.toUpperCase())
+  plate: plateSchema
 })
 
 const mapProps = {
