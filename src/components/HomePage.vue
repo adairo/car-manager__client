@@ -119,8 +119,10 @@ function fetchCars() {
 onMounted(() => {
   fetchCars()
   socket.on('cars:position-updated', (payload) => {
+    fetchCars()
+    console.log(payload)
     const carToUpdateIndex = cars.value.findIndex((car) => car.id === payload.carId)
-    cars.value[carToUpdateIndex].position = {
+    cars.value[carToUpdateIndex].currentPosition = {
       x: payload.position.lattitude,
       y: payload.position.longitude
     }
