@@ -140,7 +140,7 @@ function handleSearchCar() {
   if (!machedCar) {
     return console.log('No car was found')
   }
-  mapFlyTo(positionToLatLng(machedCar.position))
+  mapFlyTo(positionToLatLng(machedCar.currentPosition))
 }
 
 function handleDeleteCar(carId) {
@@ -243,7 +243,7 @@ function formatPosition(latLng) {
         <l-marker
           v-for="car in cars"
           :key="car.id"
-          :lat-lng="{ lat: car.position.x, lng: car.position.y }"
+          :lat-lng="{ lat: car.currentPosition.x, lng: car.currentPosition.y }"
         >
           <l-icon :icon-url="icon" :icon-size="[50, 50]" />
           <l-popup>
@@ -269,7 +269,7 @@ function formatPosition(latLng) {
                   />
                 </svg>
 
-                <span>{{ formatPosition(positionToLatLng(car.position)) }}</span>
+                <span>{{ formatPosition(positionToLatLng(car.currentPosition)) }}</span>
               </div>
             </div>
           </l-popup>
@@ -334,7 +334,10 @@ function formatPosition(latLng) {
                 </svg>
                 <span>{{ t('home.editCarButton') }}</span>
               </button>
-              <button @click="mapFlyTo(positionToLatLng(car.position))" class="car-card__button">
+              <button
+                @click="mapFlyTo(positionToLatLng(car.currentPosition))"
+                class="car-card__button"
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
