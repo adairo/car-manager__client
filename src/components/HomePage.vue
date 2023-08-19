@@ -1,6 +1,6 @@
 <script setup>
 import { useRouter } from 'vue-router'
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, reactive } from 'vue'
 import { getSession } from '../lib/session'
 import icon from '../components/CarIcon/icon.png'
 import { socket } from '../socket'
@@ -16,12 +16,14 @@ import {
   LIcon,
   LPopup,
   LControlLayers,
-  LControl
+  LControl,
+  LPolyline
 } from '@vue-leaflet/vue-leaflet'
 import { xfetch } from '../lib/xfetch'
 import { z } from 'zod'
 
 const session = getSession()
+const router = useRouter()
 
 if (!session) {
   router.push('/login')
@@ -34,7 +36,6 @@ const registerCarDialog = ref(null)
 const editCarDialog = ref(null)
 
 const searchCarInput = ref()
-const router = useRouter()
 
 const newCarData = ref({
   plate: '',
@@ -44,6 +45,11 @@ const newCarData = ref({
 const editCarData = ref({
   id: undefined,
   plate: ''
+})
+
+const selectedCar = reactive({
+  carId: undefined,
+  positionHistory: []
 })
 
 const timeFormatter = computed(
@@ -57,6 +63,8 @@ const plateSchema = z
   .string()
   .trim()
   .nonempty()
+  .min(7)
+  .max(7)
   .regex(/[a-zA-Z0-9]{7}/)
   .transform((plate) => plate.toUpperCase())
 
@@ -120,14 +128,25 @@ onMounted(() => {
   fetchCars()
   socket.on('cars:position-updated', (payload) => {
     fetchCars()
-    console.log(payload)
     const carToUpdateIndex = cars.value.findIndex((car) => car.id === payload.carId)
     cars.value[carToUpdateIndex].currentPosition = {
       x: payload.position.lattitude,
       y: payload.position.longitude
     }
+
+    if (payload.carId === selectedCar.carId) {
+      fetchPositionHistory(payload.carId)
+    }
   })
 })
+
+function fetchPositionHistory(carId) {
+  fetch('http://localhost:3000/position/' + carId, {
+    method: 'GET'
+  })
+    .then((res) => res.json())
+    .then((history) => (selectedCar.positionHistory = history))
+}
 
 function positionToLatLng(position) {
   return L.latLng([position.x, position.y])
@@ -220,6 +239,12 @@ function handleEditCar() {
     })
 }
 
+function handleSelectCar(car) {
+  mapFlyTo(positionToLatLng(car.currentPosition))
+  selectedCar.carId = car.id
+  fetchPositionHistory(car.id)
+}
+
 function formatPosition(latLng) {
   return `${latLng.lat.toFixed(5)}, ${latLng.lng.toFixed(5)}`
 }
@@ -241,7 +266,15 @@ function formatPosition(latLng) {
           name="darkMap"
         />
 
+        <l-polyline
+          :lat-lngs="selectedCar.positionHistory.map((point) => positionToLatLng(point.position))"
+        />
         <l-control-layers />
+        <!--  <l-marker
+          v-for="point in selectedCar.positionHistory"
+          :key="point.id"
+          :lat-lng="positionToLatLng(point.position)"
+        /> -->
         <l-marker
           v-for="car in cars"
           :key="car.id"
@@ -336,10 +369,7 @@ function formatPosition(latLng) {
                 </svg>
                 <span>{{ t('home.editCarButton') }}</span>
               </button>
-              <button
-                @click="mapFlyTo(positionToLatLng(car.currentPosition))"
-                class="car-card__button"
-              >
+              <button @click="handleSelectCar(car)" class="car-card__button">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
