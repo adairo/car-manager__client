@@ -247,8 +247,14 @@ function drawAndFocusCarHistory(carId) {
     carHistoryPolyline.value = L.polyline(
       history.map((position) => positionToLatLng(position.position))
     )
-    mapRef.value.leafletObject.fitBounds(carHistoryPolyline.value.getBounds()) // focus the path
-    carHistoryPolyline.value.addTo(mapRef.value.leafletObject)
+    if (history.length > 0) {
+      mapRef.value.leafletObject.fitBounds(carHistoryPolyline.value.getBounds()) // focus the path
+      carHistoryPolyline.value.addTo(mapRef.value.leafletObject)
+      return
+    }
+
+    // just focus the car if it has not a history
+    handleFlyToCar(carId)
   })
 }
 
@@ -286,16 +292,7 @@ function formatPosition(latLng) {
           layer-type="base"
           name="darkMap"
         />
-
-        <!-- <l-polyline
-          :lat-lngs="selectedCar.positionHistory.map((point) => positionToLatLng(point.position))"
-        /> -->
         <l-control-layers />
-        <!--  <l-marker
-          v-for="point in selectedCar.positionHistory"
-          :key="point.id"
-          :lat-lng="positionToLatLng(point.position)"
-        /> -->
         <l-marker
           v-for="car in cars"
           :key="car.id"
