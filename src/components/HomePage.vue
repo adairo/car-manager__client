@@ -135,7 +135,7 @@ onMounted(() => {
     }
 
     if (payload.carId === selectedCar.carId) {
-      fetchPositionHistory(payload.carId)
+      drawAndFocusCarHistory(payload.carId)
     }
   })
 })
@@ -175,6 +175,10 @@ function handleDeleteCar(carId) {
     }
   }).then(() => {
     cars.value = cars.value.filter((car) => car.id !== carId)
+    if (carId === selectedCar.carId) {
+      carHistoryPolyline.value.remove()
+      selectedCar.carId = undefined
+    }
   })
 }
 
@@ -237,18 +241,20 @@ function handleEditCar() {
     })
 }
 
-function handleSelectCar(carId) {
-  // mapFlyTo(positionToLatLng(carRef.currentPosition))
-  selectedCar.carId = carId
-
+function drawAndFocusCarHistory(carId) {
   fetchPositionHistory(carId).then((history) => {
     carHistoryPolyline.value?.remove() // remove old polyline reference
     carHistoryPolyline.value = L.polyline(
       history.map((position) => positionToLatLng(position.position))
     )
-    mapRef.value.leafletObject.fitBounds(carHistoryPolyline.value.getBounds())
+    mapRef.value.leafletObject.fitBounds(carHistoryPolyline.value.getBounds()) // focus the path
     carHistoryPolyline.value.addTo(mapRef.value.leafletObject)
   })
+}
+
+function handleSelectCar(carId) {
+  selectedCar.carId = carId
+  drawAndFocusCarHistory(carId)
 }
 
 function handleFlyToCar(carId) {
