@@ -31,7 +31,7 @@ if (!session) {
 
 const { t, locale } = useI18n()
 const cars = ref([])
-const map = ref(null)
+const mapRef = ref(null)
 const registerCarDialog = ref(null)
 const editCarDialog = ref(null)
 
@@ -97,7 +97,7 @@ const mapProps = {
   zoom: 10,
   'min-zoom': 9,
   'max-zoom': 17,
-  ref: map,
+  ref: mapRef,
   style: { width: '100%', height: '500px' },
   center: [20.708692, -103.409774],
   options: { fullscreenControl: true }
@@ -153,7 +153,7 @@ function positionToLatLng(position) {
 }
 
 function mapFlyTo(latLng, zoom = 12) {
-  map.value.leafletObject.flyTo(latLng, zoom)
+  mapRef.value.leafletObject.flyTo(latLng, zoom)
 }
 
 function handleSearchCar() {
@@ -239,10 +239,19 @@ function handleEditCar() {
     })
 }
 
-function handleSelectCar(car) {
-  mapFlyTo(positionToLatLng(car.currentPosition))
-  selectedCar.carId = car.id
-  fetchPositionHistory(car.id)
+function handleSelectCar(carId) {
+  // mapFlyTo(positionToLatLng(carRef.currentPosition))
+  selectedCar.carId = carId
+  fetchPositionHistory(carId)
+}
+
+function handleFlyToCar(carId) {
+  const carTarget = cars.value.find((car) => car.id === carId)
+  if (!carTarget) {
+    return alert('Operación inválida')
+  }
+
+  mapFlyTo(positionToLatLng(carTarget.currentPosition))
 }
 
 function formatPosition(latLng) {
@@ -322,7 +331,13 @@ function formatPosition(latLng) {
         >
       </l-map>
       <div class="cars-container">
-        <div v-for="car in cars" :key="car.id" class="car-card">
+        <div
+          v-for="car in cars"
+          :data-selected="selectedCar.carId === car.id"
+          :key="car.id"
+          @click="handleSelectCar(car.id)"
+          class="car-card"
+        >
           <div class="car-card__img">
             <img :src="icon" :width="64" :height="64" />
           </div>
@@ -335,7 +350,7 @@ function formatPosition(latLng) {
             </div>
             <div class="car-card__actions">
               <!-- {{ formatPosition(car.position) }} -->
-              <button @click="handleDeleteCar(car.id)" class="car-card__button">
+              <button @click.stop="handleDeleteCar(car.id)" class="car-card__button">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -352,7 +367,7 @@ function formatPosition(latLng) {
                 </svg>
               </button>
 
-              <button @click="openEditDialog(car.id)" class="car-card__button">
+              <button @click.stop="openEditDialog(car.id)" class="car-card__button">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -369,7 +384,7 @@ function formatPosition(latLng) {
                 </svg>
                 <span>{{ t('home.editCarButton') }}</span>
               </button>
-              <button @click="handleSelectCar(car)" class="car-card__button">
+              <button @click.stop="handleFlyToCar(car.id)" class="car-card__button">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -531,6 +546,10 @@ function formatPosition(latLng) {
   padding: 0.8rem;
   height: 100%;
   background-color: rgb(249, 249, 249);
+}
+
+.car-card[data-selected='true'] .car-card__content {
+  background-color: #7dd3fc;
 }
 
 .car-card__plate {
