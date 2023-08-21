@@ -16,8 +16,7 @@ import {
   LIcon,
   LPopup,
   LControlLayers,
-  LControl,
-  LPolyline
+  LControl
 } from '@vue-leaflet/vue-leaflet'
 import { xfetch } from '../lib/xfetch'
 import { z } from 'zod'
@@ -32,6 +31,7 @@ if (!session) {
 const { t, locale } = useI18n()
 const cars = ref([])
 const mapRef = ref(null)
+const carHistoryPolyline = ref(null)
 const registerCarDialog = ref(null)
 const editCarDialog = ref(null)
 
@@ -141,11 +141,9 @@ onMounted(() => {
 })
 
 function fetchPositionHistory(carId) {
-  fetch('http://localhost:3000/position/' + carId, {
+  return fetch('http://localhost:3000/position/' + carId, {
     method: 'GET'
-  })
-    .then((res) => res.json())
-    .then((history) => (selectedCar.positionHistory = history))
+  }).then((res) => res.json())
 }
 
 function positionToLatLng(position) {
@@ -242,7 +240,15 @@ function handleEditCar() {
 function handleSelectCar(carId) {
   // mapFlyTo(positionToLatLng(carRef.currentPosition))
   selectedCar.carId = carId
-  fetchPositionHistory(carId)
+
+  fetchPositionHistory(carId).then((history) => {
+    carHistoryPolyline.value?.remove() // remove old polyline reference
+    carHistoryPolyline.value = L.polyline(
+      history.map((position) => positionToLatLng(position.position))
+    )
+    mapRef.value.leafletObject.fitBounds(carHistoryPolyline.value.getBounds())
+    carHistoryPolyline.value.addTo(mapRef.value.leafletObject)
+  })
 }
 
 function handleFlyToCar(carId) {
@@ -275,9 +281,9 @@ function formatPosition(latLng) {
           name="darkMap"
         />
 
-        <l-polyline
+        <!-- <l-polyline
           :lat-lngs="selectedCar.positionHistory.map((point) => positionToLatLng(point.position))"
-        />
+        /> -->
         <l-control-layers />
         <!--  <l-marker
           v-for="point in selectedCar.positionHistory"
